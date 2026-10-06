@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Camp ao vivo — Painel Admin</title>
+<style>
+:root{--bg:#080f19;--card:#15111a;--line:#303746;--text:#f5f7fa;--muted:#8d98a8;--gold:#ffb51b;--blue:#2d7df6}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 45% -15%,#1a2637,#080f19 48%);color:var(--text);font:14px Arial,sans-serif}
+button,input,select{font:inherit}.top{height:52px;border-bottom:1px solid #293344;display:flex;align-items:center;padding:0 14px;gap:12px;position:sticky;top:0;z-index:20;background:#0b131fef;backdrop-filter:blur(10px)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800}.brandIcon{width:32px;height:32px;border-radius:8px;background:#2d7df6;display:grid;place-items:center}.brand small{display:block;color:#7d8998;font-size:9px;margin-top:2px}
+.topRight{margin-left:auto;display:flex;align-items:center;gap:7px}.eventControls{display:flex;align-items:center;gap:8px}.eventSelect{position:relative}.eventPill{border-radius:22px;padding:8px 13px;font-size:11px;font-weight:900;cursor:pointer;white-space:nowrap}.eventPill.dayPill{background:#241d0a;border:1px solid #8d6810;color:#ffbd21}.eventPill.levelPill{background:#10251a;border:1px solid #287f48;color:#d7f4df}.eventMenu{position:absolute;top:calc(100% + 7px);right:0;min-width:145px;background:#111923;border:1px solid #354255;border-radius:9px;padding:6px;box-shadow:0 15px 40px #000b;z-index:80;display:none}.eventMenu.show{display:block}.eventMenu button{display:block;width:100%;text-align:left;background:transparent;border:0;color:#e7ebef;border-radius:6px;padding:8px 9px;font-size:11px;font-weight:800;cursor:pointer}.eventMenu button:hover{background:#202b39}.eventMenu .selected{background:#1d2b21;color:#8fe5a0}.status{font-size:10px;color:#83e58a}.btn{border:1px solid #354255;background:#121c29;color:#e7ebef;border-radius:7px;padding:8px 11px;font-size:11px;font-weight:700;cursor:pointer}.btn:hover{filter:brightness(1.18)}.btn.primary{background:var(--gold);border-color:var(--gold);color:#16120a}
+.layout{display:grid;grid-template-columns:minmax(650px,1fr) 410px;gap:12px;padding:8px 13px 20px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.team{background:linear-gradient(180deg,#19131c,#120e15);border:1px solid #4a2635;border-radius:8px;overflow:hidden}.head{height:58px;margin:7px 6px 5px;border-radius:6px;display:flex;align-items:center;padding:0 12px;gap:11px}.logo{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#171b22;border:2px solid #3a414c;font-size:11px;font-weight:900;overflow:hidden}.logo img{width:100%;height:100%;object-fit:contain}.teamName{font-size:15px;font-weight:600}.body{display:grid;grid-template-columns:50px 80px 1fr;gap:5px;padding:0 7px 9px}.label{font-size:8px;color:#8c939e;text-transform:uppercase;margin-bottom:4px}.emptyField{opacity:.95}.field{height:28px;border:1px solid #a54854;border-radius:5px;background:#1a151e;display:flex;align-items:center;justify-content:center}.field.gold{border-color:#d39a21}.field input{width:100%;background:transparent;border:0;outline:0;color:white;text-align:center;font-weight:700}.positions{display:grid;grid-template-columns:repeat(6,minmax(24px,1fr));column-gap:5px;row-gap:9px;padding:5px 2px 0}.positions label{font-size:12px;display:flex;align-items:center;gap:3px;justify-content:flex-start;font-weight:700}.positions input{appearance:none;width:13px;height:13px;min-width:13px;border:1px solid #34506c;border-radius:50%;background:#0b1119;margin:0}.positions input:checked{background:var(--gold);box-shadow:inset 0 0 0 3px #0b1119}
+.side{background:#101722;border:1px solid #303a48;border-radius:8px;padding:6px;height:max-content;position:sticky;top:60px}.day{background:var(--gold);color:#17120a;text-align:center;border-radius:8px;padding:7px;font-size:12px;font-weight:800;margin-bottom:12px}.leagueTitle{font-size:24px;margin:0 8px 1px}.sub{font-size:9px;color:#22a9ff;font-weight:800;margin-left:8px}.drop{float:right;margin-right:7px;background:#241d0a;border:1px solid #6f5715;color:#ffbd21;border-radius:18px;padding:7px 10px;font-size:10px;font-weight:800}
+.generalTitle{margin:18px 4px 8px;color:#f3f5f7;font-size:12px;font-weight:900;text-transform:uppercase}.generalTable .tr{grid-template-columns:32px 1fr 58px 48px 50px 50px}.generalTable input{width:100%;background:transparent;border:0;outline:0;color:#fff;text-align:center;font-weight:800;font-size:11px}.table{margin-top:10px;border:1px solid #283240;border-radius:6px;overflow:hidden}.tr{display:grid;grid-template-columns:32px 1fr 52px 48px 50px 45px;min-height:30px;align-items:center;border-bottom:1px solid #252d38;padding:0 6px;font-size:11px}.tr:last-child{border:0}.th{background:#1c222b;color:#8e98a5;font-size:9px}.tn{font-weight:800}.pts{font-weight:900}.green{color:#7ce18b;text-align:center}.center{text-align:center}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:50;padding:15px}.modal.show{display:flex}.admin{width:min(980px,100%);max-height:92vh;overflow:auto;background:#101722;border:1px solid #3b4658;border-radius:12px;box-shadow:0 20px 80px #000; padding:18px}.adminHead{display:flex;align-items:center;gap:10px;border-bottom:1px solid #293343;padding-bottom:13px;margin-bottom:13px}.adminHead h2{margin:0;font-size:20px}.close{margin-left:auto;background:#222b38;border:0;color:white;border-radius:6px;padding:7px 10px;cursor:pointer}.tabs{display:flex;gap:7px;margin-bottom:13px}.tab{background:#151f2c;border:1px solid #354255;color:#cdd5df;padding:8px 11px;border-radius:6px;cursor:pointer}.tab.active{background:#2d7df6;border-color:#2d7df6;color:white}.adminGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.adminCard{background:#151c27;border:1px solid #293545;border-radius:8px;padding:10px}.adminCard h3{margin:0 0 8px;font-size:13px}.row{display:grid;grid-template-columns:1fr 110px;gap:7px;align-items:center;margin:6px 0}.row input,.row select{width:100%;background:#0c131d;color:#fff;border:1px solid #344255;border-radius:5px;padding:7px}.color{height:35px;padding:2px!important}.adminActions{display:flex;justify-content:flex-end;gap:7px;margin-top:14px}.help{color:#8c98a7;font-size:11px;line-height:1.5}.hidden{display:none}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.side{position:static}}@media(max-width:720px){.eventControls{gap:4px}.eventPill{padding:7px 9px;font-size:10px}.topRight .eventControls{display:flex}.grid,.adminGrid{grid-template-columns:1fr}.topRight .optional{display:none}.layout{padding:6px}.body{grid-template-columns:48px 72px 1fr}.positions{grid-template-columns:repeat(6,minmax(22px,1fr));column-gap:2px;row-gap:8px}.positions label{font-size:11px}}
+
+.clear-placement{width:30px;height:28px;padding:0;border:1px solid #394555;border-radius:6px;background:#202631;color:#f2a9b4;display:grid;place-items:center;cursor:pointer;margin-left:auto}.clear-placement:hover{filter:brightness(1.2)}.clear-placement svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.placement-label{display:flex;align-items:center;height:16px}.fieldLabel{display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:11px;font-weight:700;color:#dce1e8}
+.generalPage{padding:28px 32px;min-height:calc(100vh - 78px)}.generalPanel{max-width:1200px;margin:0 auto;background:#11161d;border:1px solid #283240;border-radius:10px;padding:18px}.generalHead{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:12px 0 18px}.generalHead .leagueTitle{margin:0}.generalTable .tr{grid-template-columns:48px minmax(180px,1fr) 110px 90px 90px 90px 50px}.generalTable input{width:100%;background:#171d25;border:1px solid #303a47;border-radius:4px;outline:0;color:#fff;text-align:center;font-weight:800;font-size:11px;padding:6px}.generalTable .tr{min-height:38px}.generalTable .th{background:#1c222b}.hidden{display:none!important}</style>
+</head>
+<body>
+<header class="top">
+<div class="brand"><div class="brandIcon">C</div><div>Camp ao vivo<small>Painel de campeonato · auto-save</small></div></div>
+<div class="topRight"><div class="eventControls"><div class="eventSelect"><button class="eventPill dayPill" id="eventDayBtn" onclick="toggleEventMenu('dayMenu')">DIA 1 / 4 DIAS</button><div class="eventMenu" id="dayMenu"></div></div><div class="eventSelect"><button class="eventPill levelPill" id="eventLevelBtn" onclick="toggleEventMenu('levelMenu')">MUNDIAL</button><div class="eventMenu" id="levelMenu"><button onclick="setEventLevel('Mundial')">Mundial</button><button onclick="setEventLevel('Amador')">Amador</button></div></div></div><span class="status">● Salvo no navegador</span><button class="btn" onclick="showGeneralPage()">Tabela geral</button><button class="btn" onclick="openAdmin()">⚙ Admin</button><button class="btn" onclick="downloadBackup()">Baixar backup</button><button class="btn" onclick="downloadTablePNG()">Baixar tabela</button><button class="btn primary" onclick="exportHTML()">Exportar site</button></div>
+</header>
+
+<div id="dayPage"><main class="layout"><section><div id="grid" class="grid"></div></section><aside class="side"><div class="day" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>▦ Tabela do dia</span><button class="btn" style="padding:5px 8px;font-size:9px" onclick="clearDayTable()">Apagar tudo</button></div><div><span class="drop" id="roundLabel">QUEDA 6/16</span><h1 class="leagueTitle" id="leagueName">LIGA LPT</h1><div class="sub" id="championLabel">Formato: Champions Rush</div></div><div class="table" id="standings"></div></aside></main></div><div id="generalPage" class="generalPage hidden"><div class="generalPanel"><div class="day">▦ Tabela geral</div><div class="generalHead"><div><h1 class="leagueTitle" id="generalLeagueName">LIGA LPT</h1><div class="sub">Classificação geral do campeonato</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="downloadGeneralTablePNG()">Baixar tabela geral</button><button class="btn" onclick="showDayPage()">← Voltar para tabela do dia</button></div></div><div class="table generalTable" id="generalStandings"></div></div></div>
+
+<input id="logoFile" type="file" accept="image/*" class="hidden" onchange="uploadLogo(event)">
+
+<div class="modal" id="modal">
+<div class="admin">
+<div class="adminHead"><div><h2>⚙ Painel Admin</h2><div class="help">Edite equipes, nomes, cores, rodada, pontuação e tabela. Tudo fica salvo neste navegador.</div></div><button class="close" onclick="closeAdmin()">✕</button></div>
+<div class="tabs"><button class="tab active" onclick="showTab('teams',this)">Equipes</button><button class="tab" onclick="showTab('config',this)">Configuração</button><button class="tab" onclick="showTab('tools',this)">Ferramentas</button></div>
+<div id="tabTeams">
+<div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+<button class="btn primary" onclick="addTeam()">＋ Adicionar equipe</button>
+</div>
+<div class="adminGrid" id="adminTeams"></div>
+</div>
+<div id="tabConfig" class="hidden"></div>
+<div id="tabTools" class="hidden"></div>
+<div class="adminActions"><button class="btn" onclick="closeAdmin()">Cancelar</button><button class="btn primary" onclick="applyAdmin()">Salvar alterações</button></div>
+</div></div>
+
+<script>
+const defaultTeams=[
+["AFROGAMES","#557d2b"],["ALPHA7","#91464a"],["ANTISOCIAL TEAM","#278c67"],["INFLUENCE RAGE","#7d6d28"],
+["LOUD SNICKERS","#8a7628"],["RUSH GAMING","#3f5f94"],["SIX EIGHT","#97434e"],["TEAM SOLID","#63338b"],["FLUXO W7M","#a56a22"],["SX TET","#813178"]
+];
+let state=JSON.parse(localStorage.getItem("campState")||"null")||{league:"LIGA LPT",format:"Point Rush",champion:160,round:6,totalRounds:16,eventDay:1,eventDays:31,eventLevel:"Mundial",teams:defaultTeams.map((x,i)=>({name:x[0],color:x[1],logo:"",pos:"",pts:"",roundPts:"",kills:"",drop:"",booy:0}))};
+state.format = state.format || "Point Rush";
+state.eventDay = Number(state.eventDay)||1;
+state.eventDays = Math.max(31, Number(state.eventDays)||31);
+state.eventLevel = state.eventLevel || "Mundial";
+if(!Array.isArray(state.generalTeams)) state.generalTeams=state.teams.map(t=>({name:t.name,logo:t.logo||"",generalPts:Number(t.pts)||0,generalBooy:Number(t.booy)||0,generalKills:Number(t.kills)||0,generalDrop:Number(t.drop)||0}));
+state.teams.forEach(t=>{ if(t.roundPts===undefined) t.roundPts=""; if(t.drop===undefined) t.drop=""; if(t.basePts===undefined) t.basePts=(Number(t.pts)||0)-(Number(t.roundPts)||0); });
+function save(){localStorage.setItem("campState",JSON.stringify(state))}
+function toggleEventMenu(id){
+  document.querySelectorAll(".eventMenu").forEach(m=>{if(m.id!==id)m.classList.remove("show")});
+  const m=document.getElementById(id); if(m)m.classList.toggle("show");
+}
+function setEventDay(day){
+  state.eventDay=Number(day)||1; save(); renderEventControls(); document.querySelectorAll(".eventMenu").forEach(m=>m.classList.remove("show"));
+}
+function setEventLevel(level){
+  state.eventLevel=level||"Mundial"; save(); renderEventControls(); document.querySelectorAll(".eventMenu").forEach(m=>m.classList.remove("show"));
+}
+function renderEventControls(){
+  const d=document.getElementById("eventDayBtn"), l=document.getElementById("eventLevelBtn");
+  if(d)d.textContent=`DIA ${state.eventDay}`;
+  const menu=document.getElementById("dayMenu");
+  if(menu) menu.innerHTML=Array.from({length:state.eventDays},(_,i)=>`<button onclick="setEventDay(${i+1})">Dia ${i+1}</button>`).join("");
+  if(l)l.textContent=String(state.eventLevel||"Mundial").toUpperCase();
+  document.querySelectorAll("#dayMenu button").forEach((b,i)=>b.classList.toggle("selected",i+1===Number(state.eventDay)));
+  document.querySelectorAll("#levelMenu button").forEach(b=>b.classList.toggle("selected",b.textContent.trim().toLowerCase()===String(state.eventLevel).toLowerCase()));
+}
+document.addEventListener("click",e=>{if(!e.target.closest(".eventSelect"))document.querySelectorAll(".eventMenu").forEach(m=>m.classList.remove("show"))});
+function initials(n){return n.split(/\s+/).map(x=>x[0]).slice(0,2).join("").toUpperCase()}
+function card(t,i){
+return `<article class="team"><div class="head" style="background:${t.color}"><div class="logo">${t.logo?`<img src="${t.logo}">`:initials(t.name)}</div><span class="teamName">${t.name}</span></div>
+<div class="body"><div><div class="label">Posição</div><div class="field"><span class="fieldLabel">Pos.</span></div></div>
+<div><div class="label">Pts acum.</div><div class="field"><span class="fieldLabel">Total</span></div></div>
+<div><div class="placement-label"><div class="label" style="margin:0">Colocação</div><button class="clear-placement" title="Limpar colocação, Pts queda e abates" onclick="clearTeam(${i})" aria-label="Limpar colocação, Pts queda e abates"><svg viewBox="0 0 24 24"><path d="M4 20h4l9.5-9.5-4-4L4 16v4Z"/><path d="m13.5 5.5 2-2a2 2 0 0 1 2.8 0l2.2 2.2a2 2 0 0 1 0 2.8l-2 2"/><path d="M7 20h13"/></svg></button></div><div class="positions">${Array.from({length:12},(_,k)=>k+1).map(n=>{const used=state.teams.some((x,j)=>j!==i && String(x.pos)===String(n)); return `<label><input type="radio" name="p${i}" ${String(t.pos)==String(n)?"checked":""} ${used?"disabled":""} onchange="setTeam(${i},'pos',${n})">${n}</label>`}).join("")}</div></div>
+<div><div class="label">Abates</div><div class="field gold"><input type="number" min="0" value="${t.kills}" onchange="setTeam(${i},'kills',this.value)"></div></div>
+<div><div class="label">Pts queda</div><div class="field gold"><input type="number" min="0" value="${t.roundPts||""}" readonly title="Calculado automaticamente: colocação + abates"></div></div></div></article>`}
+function setGeneral(i,k,v){
+  const t=state.generalTeams[i];
+  if(!t)return;
+  t[k]=k==="name"?String(v):Number(v)||0;
+  save();
+  renderGeneral();
+}
+function addGeneralTeam(){
+  const name=prompt("Nome da equipe:");
+  if(!name || !name.trim()) return;
+  state.generalTeams.push({name:name.trim(),logo:"",generalPts:0,generalBooy:0,generalKills:0,generalDrop:0});
+  save();
+  renderGeneral();
+}
+function deleteGeneralTeam(i){
+  if(!state.generalTeams[i])return;
+  if(confirm("Excluir a equipe "+state.generalTeams[i].name+" da tabela geral?")){
+    state.generalTeams.splice(i,1);
+    save();
+    renderGeneral();
+  }
+}
+function renderGeneral(){
+  const arr=[...state.generalTeams].sort((a,b)=>{
+    const pa=Number(a.generalPts)||0, pb=Number(b.generalPts)||0;
+    if(pb!==pa)return pb-pa;
+    const ba=Number(a.generalBooy)||0, bb=Number(b.generalBooy)||0;
+    if(bb!==ba)return bb-ba;
+    return (Number(b.generalKills)||0)-(Number(a.generalKills)||0);
+  });
+  document.getElementById("generalStandings").innerHTML=
+    `<div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="btn primary" onclick="addGeneralTeam()">＋ Adicionar equipe</button></div>`+
+    `<div class="tr th"><div>#</div><div>Equipe</div><div>Pontos</div><div>Booyah</div><div>Abates</div><div>Quedas</div><div>Ações</div></div>`+
+    arr.map((t)=>{
+      const idx=state.generalTeams.indexOf(t);
+      return `<div class="tr"><div>${arr.indexOf(t)+1}º</div><div><input type="text" value="${esc(t.name)}" onchange="setGeneral(${idx},'name',this.value)" style="text-align:left"></div><div><input type="number" min="0" value="${Number(t.generalPts)||0}" onchange="setGeneral(${idx},'generalPts',this.value)"></div><div><input type="number" min="0" value="${Number(t.generalBooy)||0}" onchange="setGeneral(${idx},'generalBooy',this.value)"></div><div><input type="number" min="0" value="${Number(t.generalKills)||0}" onchange="setGeneral(${idx},'generalKills',this.value)"></div><div><input type="number" min="0" value="${Number(t.generalDrop)||0}" onchange="setGeneral(${idx},'generalDrop',this.value)"></div><button class="btn" onclick="deleteGeneralTeam(${idx})" title="Remover equipe">✕</button></div>`;
+    }).join("");
+}
+function deleteGeneralTeam(i){
+  if(state.generalTeams.length<=1){alert("A Tabela geral precisa ter pelo menos uma equipe.");return;}
+  const t=state.generalTeams[i];
+  if(confirm("Remover a equipe "+t.name+" da Tabela geral?")){
+    state.generalTeams.splice(i,1);
+    save();
+    renderGeneral();
+  }
+}
+
+function downloadGeneralTablePNG(){
+  const W=1200, rowH=54, headerH=154, pad=56;
+  const sorted=[...state.generalTeams].sort((a,b)=>{
+    const pa=Number(a.generalPts)||0, pb=Number(b.generalPts)||0;
+    if(pb!==pa)return pb-pa;
+    const ba=Number(a.generalBooy)||0, bb=Number(b.generalBooy)||0;
+    if(bb!==ba)return bb-ba;
+    return (Number(b.generalKills)||0)-(Number(a.generalKills)||0);
+  });
+  const H=headerH+(sorted.length+1)*rowH+pad;
+  const c=document.createElement("canvas"); c.width=W; c.height=H;
+  const x=c.getContext("2d");
+  x.fillStyle="#101114"; x.fillRect(0,0,W,H);
+  x.fillStyle="#17181d"; x.fillRect(0,0,W,headerH);
+  x.fillStyle="#f3f5f7"; x.font="800 38px Arial";
+  const title=String(state.league||"CAMPEONATO");
+  x.fillText(title,28,48); x.fillText("- TABELA GERAL",28,88);
+  x.fillStyle="#20a9ff"; x.font="800 20px Arial";
+  x.fillText(`${sorted.length} times`,28,123);
+  const y0=headerH;
+  x.fillStyle="#19202a"; x.fillRect(0,y0,W,rowH);
+  x.fillStyle="#8f98a5"; x.font="800 16px Arial";
+  const cols=[28,110,500,710,835,980];
+  ["#","Equipe","Pontos","Booyah","Abates","Quedas"].forEach((v,i)=>x.fillText(v,cols[i],y0+34));
+  sorted.forEach((team,i)=>{
+    const y=y0+rowH*(i+1);
+    x.fillStyle=i%2===0?"#141518":"#111214"; x.fillRect(0,y,W,rowH);
+    if(i===0){x.fillStyle="#1d3a2c";x.fillRect(0,y,5,rowH)}
+    x.strokeStyle="#262a31"; x.lineWidth=1; x.beginPath(); x.moveTo(0,y+rowH-.5); x.lineTo(W,y+rowH-.5); x.stroke();
+    x.fillStyle="#e9edf2"; x.font="700 17px Arial"; x.fillText(`${i+1}º`,28,y+34);
+    x.fillStyle="#f5f6f8"; x.font="800 18px Arial"; x.fillText(String(team.name||"EQUIPE"),110,y+34);
+    x.fillStyle="#e9edf2"; x.fillText(String(team.generalPts||0),500,y+34);
+    x.fillStyle="#46d15b"; x.fillText(String(team.generalBooy||0),710,y+34);
+    x.fillStyle="#e9edf2"; x.fillText(String(team.generalKills||0),835,y+34);
+    x.fillStyle="#aeb5bf"; x.fillText(String(team.generalDrop||0),980,y+34);
+  });
+  const filename=(String(state.league||"tabela-geral").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase()||"tabela-geral")+"-geral.png";
+  const dataUrl=c.toDataURL("image/png");
+  const win=window.open("about:blank","_blank");
+  if(!win){alert("O navegador bloqueou a nova aba. Permita pop-ups para este site e tente novamente.");return;}
+  win.document.open();
+  win.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${filename}</title><style>
+  *{box-sizing:border-box}body{margin:0;background:#0b0c0f;color:#fff;font-family:Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px;gap:18px}.bar{width:min(1200px,100%);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#15171c;border:1px solid #2b3038;border-radius:12px;padding:12px 14px}.title{font-weight:800;font-size:16px}.actions{display:flex;gap:8px}.btn{border:1px solid #3b424d;background:#20242b;color:#fff;border-radius:8px;padding:10px 14px;font-weight:800;cursor:pointer;text-decoration:none}.btn.save{background:#1f9d4c;border-color:#39c96a}.hint{color:#9aa2ad;font-size:13px;width:min(1200px,100%)}.wrap{width:min(1200px,100%);overflow:auto;border-radius:10px}.wrap img{display:block;width:1200px;max-width:none;height:auto}</style></head><body>
+  <div class="bar"><div class="title">Tabela geral — ${filename}</div><div class="actions"><a class="btn save" download="${filename}" href="${dataUrl}">Salvar PNG</a><button class="btn" onclick="window.print()">Imprimir / PDF</button></div></div>
+  <div class="hint">A tabela geral foi aberta no navegador. Clique em <b>Salvar PNG</b> para guardar a imagem.</div><div class="wrap"><img src="${dataUrl}" alt="Tabela geral"></div></body></html>`);
+  win.document.close();
+}
+
+function showGeneralPage(){document.getElementById("dayPage").classList.add("hidden");document.getElementById("generalPage").classList.remove("hidden");document.getElementById("generalLeagueName").textContent=state.league;renderGeneral()}
+function showDayPage(){document.getElementById("generalPage").classList.add("hidden");document.getElementById("dayPage").classList.remove("hidden")}
+
+function render(){renderEventControls();document.getElementById("grid").innerHTML=state.teams.map(card).join("");document.getElementById("leagueName").textContent=state.league;document.getElementById("championLabel").textContent=`Formato: ${state.format}`;document.getElementById("roundLabel").textContent=`QUEDA ${state.round}/${state.totalRounds}`;renderStandings();renderGeneral()}
+function placementPoints(pos){
+  const map={1:12,2:9,3:8,4:7,5:6,6:5,7:4,8:3,9:2,10:1,11:0,12:0};
+  return map[Number(pos)] ?? 0;
+}
+function recalcTeamPoints(t){
+  const kills=Number(t.kills)||0;
+  const placement=placementPoints(t.pos);
+  t.roundPts=placement+kills;
+  const base=Number(t.basePts)||0;
+  t.pts=base+t.roundPts;
+}
+function setTeam(i,k,v){
+  const t=state.teams[i];
+  if(k==="pos" || k==="kills"){
+    if(t.basePts===undefined) t.basePts=(Number(t.pts)||0)-(Number(t.roundPts)||0);
+    t[k]=v;
+    if(k==="pos") t.booy=(String(v)==="1")?1:0;
+    recalcTeamPoints(t);
+  }else if(k==="pts"){
+    t.pts=Number(v)||0;
+    t.basePts=t.pts-(Number(t.roundPts)||0);
+  }else{
+    t[k]=v;
+  }
+  save();
+  render();
+}
+function renderStandings(){
+  const arr=[...state.teams].sort((a,b)=>{
+    const pa=Number(a.pts)||0, pb=Number(b.pts)||0;
+    if(pb!==pa) return pb-pa;
+    const ba=Number(a.booy)||0, bb=Number(b.booy)||0;
+    if(bb!==ba) return bb-ba;
+    return (Number(b.kills)||0)-(Number(a.kills)||0);
+  });
+  document.getElementById("standings").innerHTML=`<div class="tr th"><div>#</div><div>Equipe</div><div>Pontos</div><div>Booyah</div><div>Abates</div><div>Quedas</div><div>Ações</div></div>`+arr.map((t,i)=>`<div class="tr"><div>${i+1}º</div><div class="tn">${t.name}</div><div class="pts">${Number(t.pts)||0}</div><div class="green">${Number(t.booy)||0}</div><div class="center">${Number(t.kills)||0}</div><div class="center">${Number(t.drop)||0}</div></div>`).join("");
+}
+function openAdmin(){renderAdmin();document.getElementById("modal").classList.add("show")}
+function closeAdmin(){document.getElementById("modal").classList.remove("show")}
+function renderAdmin(){document.getElementById("adminTeams").innerHTML=state.teams.map((t,i)=>`<div class="adminCard"><h3>${i+1}. ${t.name} <button class="btn" style="float:right;padding:4px 7px" onclick="deleteTeam(${i})">Excluir</button></h3><div class="row"><label>Nome</label><input id="n${i}" value="${esc(t.name)}"></div><div class="row"><label>Cor</label><input id="c${i}" class="color" type="color" value="${t.color}"></div>
+<div class="row"><label>Logo</label><input id="logo${i}" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onchange="previewLogo(event,${i})"></div>
+<div id="logoPreview${i}" style="margin:7px 0;display:flex;align-items:center;gap:8px;color:#8d98a8;font-size:10px">
+${t.logo?`<img src="${t.logo}" style="width:42px;height:42px;object-fit:contain;background:#0b1119;border:1px solid #354255;border-radius:7px;padding:3px"><span>Logo atual</span><button class="btn" style="padding:5px 7px" onclick="removeLogo(${i})">Remover</button>`:`Nenhum logo selecionado`}
+</div>
+<div class="row"><label>Booyah</label><input id="b${i}" type="number" min="0" value="${t.booy||0}"></div><div class="row"><label>Pontos totais</label><input id="p${i}" type="number" min="0" value="${t.pts||0}"></div><div class="row"><label>Abates</label><input id="k${i}" type="number" min="0" value="${t.kills||0}"></div><div class="row"><label>Quedas jogadas</label><input id="d${i}" type="number" min="0" value="${t.drop||0}"></div></div>`).join("");
+document.getElementById("tabConfig").innerHTML=`<div class="adminGrid"><div class="adminCard"><h3>Informações da liga</h3><div class="row"><label>Nome da liga</label><input id="league" value="${esc(state.league)}"></div><div class="row"><label>Formato</label><div style="padding:8px 0;color:#dbe3ef;font-weight:800">${esc(state.format || "Point Rush")}</div></div><div class="row"><label>Queda atual</label><input id="round" type="number" value="${state.round}"></div><div class="row"><label>Total de quedas</label><input id="totalRounds" type="number" value="${state.totalRounds}"></div></div></div>`;
+document.getElementById("tabTools").innerHTML=`<div class="adminCard"><h3>Fase do campeonato</h3><p class="help">Escolha a fase que aparecerá no painel.</p><div class="adminActions" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn ${state.format==='Point Rush'?'primary':''}" onclick="setPhase('Point Rush')">Point Rush</button><button class="btn ${state.format==='Fase de Grupos'?'primary':''}" onclick="setPhase('Fase de Grupos')">Fase de Grupos</button><button class="btn ${state.format==='Fase Final'?'primary':''}" onclick="setPhase('Fase Final')">Fase Final</button><button class="btn ${state.format==='Final'?'primary':''}" onclick="setPhase('Final')">Final</button></div></div><div class="adminCard"><h3>Dados</h3><div class="adminActions" style="justify-content:flex-start"><button class="btn" onclick="downloadBackup()">Baixar JSON</button><button class="btn" onclick="document.getElementById('backupInput').click()">Importar JSON</button><button class="btn primary" onclick="resetData()">Zerar campeonato</button></div></div><input id="backupInput" type="file" accept=".json" class="hidden" onchange="importBackup(event)">`}
+function esc(s){return String(s).replaceAll("&","&amp;").replaceAll('"',"&quot;").replaceAll("<","&lt;").replaceAll(">","&gt;")}
+const pendingLogos={};
+function previewLogo(event,i){
+ const file=event.target.files && event.target.files[0];
+ if(!file)return;
+ if(file.size>2*1024*1024){alert("A logo deve ter no máximo 2 MB.");event.target.value="";return;}
+ const reader=new FileReader();
+ reader.onload=()=>{pendingLogos[i]=reader.result;const box=document.getElementById("logoPreview"+i);if(box)box.innerHTML=`<img src="${reader.result}" style="width:42px;height:42px;object-fit:contain;background:#0b1119;border:1px solid #354255;border-radius:7px;padding:3px"><span>Novo logo — clique em Salvar alterações</span>`};
+ reader.readAsDataURL(file);
+}
+function removeLogo(i){pendingLogos[i]="";const box=document.getElementById("logoPreview"+i);if(box)box.innerHTML="Logo será removido ao salvar";}
+function applyAdmin(){state.teams.forEach((t,i)=>{t.name=document.getElementById("n"+i).value||t.name;t.color=document.getElementById("c"+i).value;t.booy=document.getElementById("b"+i).value;t.pts=document.getElementById("p"+i).value;t.kills=document.getElementById("k"+i).value;t.drop=document.getElementById("d"+i).value;if(Object.prototype.hasOwnProperty.call(pendingLogos,i))t.logo=pendingLogos[i]});state.league=document.getElementById("league")?.value||state.league;state.round=document.getElementById("round")?.value||state.round;state.totalRounds=document.getElementById("totalRounds")?.value||state.totalRounds;state.eventDays=state.eventDays||31;save();render();closeAdmin()}
+function setPhase(phase){state.format=phase;save();render();renderAdmin()}
+function addTeam(){
+  const n=state.teams.length+1;
+  state.teams.push({name:"NOVA EQUIPE "+n,color:"#3f5f94",logo:"",pos:"",pts:"",roundPts:"",kills:"",drop:"",booy:0,generalPts:0,generalBooy:0,generalKills:0,generalDrop:0});
+  save();
+  render();
+  renderAdmin();
+}
+function deleteTeam(i){
+  if(state.teams.length<=1){alert("O campeonato precisa ter pelo menos uma equipe.");return;}
+  if(confirm("Excluir a equipe "+state.teams[i].name+"?")){
+    state.teams.splice(i,1);
+    save();
+    render();
+    renderAdmin();
+  }
+}
+function showTab(tab,btn){document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active");["Teams","Config","Tools"].forEach(x=>document.getElementById("tab"+x).classList.add("hidden"));document.getElementById("tab"+tab[0].toUpperCase()+tab.slice(1)).classList.remove("hidden")}
+function downloadBackup(){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:"application/json"}));a.download="camp-backup.json";a.click()}
+function importBackup(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);save();render();renderAdmin();alert("Backup importado!")}catch{alert("Arquivo inválido.")}};r.readAsText(f)}
+function clearDayTable(){
+  if(!confirm("Apagar todos os dados da Tabela do dia? Isso não altera a Tabela geral.")) return;
+  state.teams.forEach(t=>{
+    t.pos="";
+    t.pts="";
+    t.roundPts="";
+    t.kills="";
+    t.drop="";
+    t.booy=0;
+    t.basePts=0;
+  });
+  save();
+  render();
+  if(document.getElementById("adminTeams")) renderAdmin();
+}
+function clearTeam(i){
+  const t=state.teams[i];
+  if(!t) return;
+
+  // Limpa SOMENTE a colocação e os pontos da queda atual.
+  // NÃO apaga os dados acumulados da tabela: Booyah, Abates e Quedas.
+  t.pos="";
+  t.roundPts="";
+
+  save();
+  render();
+  if(document.getElementById("adminTeams")) renderAdmin();
+}
+function resetData(){if(confirm("Zerar todos os dados do campeonato?")){localStorage.removeItem("campState");location.reload()}}
+function uploadLogo(e){/* reservado para upload global */}
+function downloadTablePNG(){
+  const W=1200, rowH=54, headerH=154, pad=56;
+  const sorted=[...state.teams].sort((a,b)=>(Number(b.pts)||0)-(Number(a.pts)||0));
+  const H=headerH+sorted.length*rowH+pad;
+  const c=document.createElement("canvas"); c.width=W; c.height=H;
+  const x=c.getContext("2d");
+  x.fillStyle="#101114"; x.fillRect(0,0,W,H);
+  x.fillStyle="#17181d"; x.fillRect(0,0,W,headerH);
+  x.fillStyle="#f3f5f7"; x.font="800 38px Arial";
+  const title=String(state.league||"CAMPEONATO");
+  x.fillText(title,28,48);
+  x.fillText("- SEGUNDA FASE",28,88);
+  x.fillStyle="#20a9ff"; x.font="800 20px Arial";
+  x.fillText(`2 avançam • ${sorted.length} times`,28,123);
+  const badge=`QUEDA ${state.round}/${state.totalRounds}`;
+  x.font="800 16px Arial";
+  const bw=x.measureText(badge).width+34;
+  x.fillStyle="#251d08"; x.strokeStyle="#8d6810"; x.lineWidth=1;
+  roundRect(x,W-bw-28,20,bw,40,20); x.fill(); x.stroke();
+  x.fillStyle="#ffbc18"; x.fillText(badge,W-bw-11,46);
+  const y0=headerH;
+  x.fillStyle="#19202a"; x.fillRect(0,y0,W,rowH);
+  x.fillStyle="#8f98a5"; x.font="800 16px Arial";
+  const cols=[28,110,500,710,835,980];
+  ["#","Equipe","Pontos","Booyah","Abates","Quedas"].forEach((t,i)=>x.fillText(t,cols[i],y0+30));
+
+  const logoPromises=sorted.map(t=>new Promise(resolve=>{
+    if(!t.logo) return resolve(null);
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>resolve(null);
+    img.src=t.logo;
+  }));
+
+  Promise.all(logoPromises).then(images=>{
+    sorted.forEach((t,i)=>{
+      const y=y0+rowH*(i+1);
+      x.fillStyle=i%2===0?"#141518":"#111214"; x.fillRect(0,y,W,rowH);
+      if(i===0){x.fillStyle="#1d3a2c";x.fillRect(0,y,5,rowH)}
+      x.strokeStyle="#262a31"; x.lineWidth=1; x.beginPath(); x.moveTo(0,y+rowH-.5); x.lineTo(W,y+rowH-.5); x.stroke();
+      x.fillStyle="#e9edf2"; x.font="700 17px Arial"; x.fillText(`${i+1}º`,28,y+30);
+      const img=images[i];
+      if(img) x.drawImage(img,110,y+7,34,34);
+      x.fillStyle="#f5f6f8"; x.font="800 18px Arial"; x.fillText(String(t.name||"EQUIPE"),158,y+30);
+      x.fillStyle="#e9edf2"; x.fillText(String(t.pts||0),500,y+30);
+      x.fillStyle="#46d15b"; x.fillText(String(t.booy||0),710,y+30);
+      x.fillStyle="#e9edf2"; x.fillText(String(t.kills||0),835,y+30);
+      x.fillStyle="#aeb5bf"; x.fillText(String(t.drop||0),980,y+30);
+    });
+    const filename=(String(state.league||"tabela").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase()||"tabela")+`-queda-${state.round}.png`;
+    const dataUrl=c.toDataURL("image/png");
+
+    // Abre a tabela em uma nova aba do navegador, com botão próprio para salvar.
+    const win=window.open("about:blank","_blank");
+    if(!win){
+      alert("O navegador bloqueou a nova aba. Permita pop-ups para este site e tente novamente.");
+      return;
+    }
+    win.document.open();
+    win.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${filename}</title><style>
+      *{box-sizing:border-box}body{margin:0;background:#0b0c0f;color:#fff;font-family:Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px;gap:18px}
+      .bar{width:min(1200px,100%);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#15171c;border:1px solid #2b3038;border-radius:12px;padding:12px 14px}
+      .title{font-weight:800;font-size:16px}.actions{display:flex;gap:8px}.btn{border:1px solid #3b424d;background:#20242b;color:#fff;border-radius:8px;padding:10px 14px;font-weight:800;cursor:pointer;text-decoration:none}.btn.save{background:#1f9d4c;border-color:#39c96a}.hint{color:#9aa2ad;font-size:13px;width:min(1200px,100%)}
+      .wrap{width:min(1200px,100%);overflow:auto;border-radius:10px}.wrap img{display:block;width:1200px;max-width:none;height:auto}
+    .generalPage{padding:28px 32px;min-height:calc(100vh - 78px)}.generalPanel{max-width:1200px;margin:0 auto;background:#11161d;border:1px solid #283240;border-radius:10px;padding:18px}.generalHead{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:12px 0 18px}.generalHead .leagueTitle{margin:0}.generalTable .tr{grid-template-columns:48px minmax(180px,1fr) 110px 90px 90px 90px 50px}.generalTable input{width:100%;background:#171d25;border:1px solid #303a47;border-radius:4px;outline:0;color:#fff;text-align:center;font-weight:800;font-size:11px;padding:6px}.generalTable .tr{min-height:38px}.generalTable .th{background:#1c222b}.hidden{display:none!important}</style></head><body>
+      <div class="bar"><div class="title">Tabela gerada — ${filename}</div><div class="actions"><a class="btn save" id="saveBtn" download="${filename}" href="${dataUrl}">Salvar PNG</a><button class="btn" onclick="window.print()">Imprimir / PDF</button></div></div>
+      <div class="hint">A tabela foi aberta no navegador. Clique em <b>Salvar PNG</b> para escolher onde guardar a imagem, ou clique com o botão direito na imagem e escolha “Salvar imagem como…”.</div>
+      <div class="wrap"><img src="${dataUrl}" alt="Tabela do campeonato"></div>
+    </body></html>`);
+    win.document.close();
+  });
+}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function exportHTML(){alert("O site atual já funciona como arquivo HTML independente. Use 'Baixar backup' para transportar os dados.")}
+render();
+</script>
+</body></html>
